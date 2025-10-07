@@ -104,7 +104,7 @@ export default function Index() {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="mx-auto mt-4 max-w-2xl text-base md:text-lg text-white/90"
           >
-            Waseem Architects crafts iconic residential, commercial, and interior spaces with precision and purpose.
+             Architects crafts iconic residential, commercial, and interior spaces with precision and purpose.
           </motion.p>
           <motion.div
             initial={{ opacity: 0, y: 10 }}
