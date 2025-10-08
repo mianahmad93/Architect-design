@@ -1,6 +1,14 @@
-import { motion } from "framer-motion";
+import { useEffect } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useSEO, localBusinessSchema } from "@/lib/seo";
+import Aos from "aos";
+import "aos/dist/aos.css";
+import ExpertiseSection from "./Expertise";
+
+
+
+
 
 const heroImg =
   "https://images.unsplash.com/photo-1494526585095-c41746248156?q=80&w=2070&auto=format&fit=crop";
@@ -10,21 +18,21 @@ const expertise = [
     title: "Residential",
     desc: "Timeless homes with natural light, clean lines, and functional elegance.",
     icon: (
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M3 11l9-8 9 8"/><path d="M9 22V12h6v10"/><path d="M21 22H3"/></svg>
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M3 11l9-8 9 8" /><path d="M9 22V12h6v10" /><path d="M21 22H3" /></svg>
     ),
   },
   {
     title: "Commercial",
     desc: "Modern workplaces and retail spaces that elevate your brand.",
     icon: (
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M3 22h18"/><path d="M6 18V5h12v13"/><path d="M8 8h8"/></svg>
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M3 22h18" /><path d="M6 18V5h12v13" /><path d="M8 8h8" /></svg>
     ),
   },
   {
     title: "Interior Design",
     desc: "Minimal interiors with premium materials and warm palettes.",
     icon: (
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M4 22h16"/><path d="M7 22V7h10v15"/><path d="M12 7V2"/></svg>
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M4 22h16" /><path d="M7 22V7h10v15" /><path d="M12 7V2" /></svg>
     ),
   },
 ];
@@ -56,8 +64,13 @@ const testimonials = [
 ];
 
 export default function Index() {
+  const { scrollYProgress } = useScroll();
+  const y = useTransform(scrollYProgress, [0, 1], [0, -200]);
+
+
+
   useSEO({
-    title: "Waseem Architects — Designing Tomorrow’s Landmarks Today.",
+    title: " Designing Tomorrow’s Landmarks Today.",
     description:
       "Modern, elegant, and high-performance architecture in Pakistan. Residential, Commercial, Interior Design.",
     keywords: [
@@ -70,7 +83,7 @@ export default function Index() {
     ogImage: projects[0],
     schema: localBusinessSchema(),
   });
-
+  Aos.init()
   return (
     <div className="bg-background text-foreground">
       {/* Hero */}
@@ -78,46 +91,61 @@ export default function Index() {
         className="relative min-h-[70svh] md:min-h-[88svh] grid place-items-center overflow-hidden"
         aria-label="Hero"
       >
-        <img
+        {/* Parallax background */}
+        <motion.img
           src={heroImg}
           alt="Modern architectural facade"
           className="absolute inset-0 h-full w-full object-cover"
+          style={{ y }}
           loading="eager"
           decoding="async"
-          fetchpriority="high"
+          fetchPriority="high"
         />
+
+        {/* Gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-transparent" />
+
+        {/* Text content */}
         <div className="relative container text-center text-white">
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            viewport={{ once: false, amount: 0.3 }}
             transition={{ duration: 0.6 }}
             className="font-heading text-3xl md:text-5xl lg:text-6xl font-semibold tracking-tight"
           >
             Designing Tomorrow’s Landmarks Today.
           </motion.h1>
+
           <motion.p
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            viewport={{ once: false, amount: 0.3 }}
             transition={{ duration: 0.6, delay: 0.1 }}
             className="mx-auto mt-4 max-w-2xl text-base md:text-lg text-white/90"
           >
-             Architects crafts iconic residential, commercial, and interior spaces with precision and purpose.
+            Architects crafts iconic residential, commercial, and interior spaces with precision and purpose.
           </motion.p>
+
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            viewport={{ once: false, amount: 0.3 }}
             transition={{ duration: 0.6, delay: 0.15 }}
             className="mt-8 flex items-center justify-center gap-3"
           >
             <a href="#contact">
-              <Button className="bg-accent text-accent-foreground hover:opacity-95">Start a Project</Button>
+              <Button className="bg-accent text-accent-foreground hover:opacity-95">
+                Start a Project
+              </Button>
             </a>
             <a href="#about">
-              <Button variant="outline" className="border-white/70 text-white bg-white/10 hover:bg-white/20">Learn More</Button>
+              <Button
+                variant="outline"
+                className="border-white/70 text-white bg-white/10 hover:bg-white/20"
+              >
+                Learn More
+              </Button>
             </a>
           </motion.div>
         </div>
@@ -126,18 +154,39 @@ export default function Index() {
       {/* About */}
       <section id="about" className="container py-16 md:py-24">
         <div className="grid gap-10 md:grid-cols-2 md:gap-14 items-center">
-          <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
-            <h2 className="font-heading text-2xl md:text-4xl">About Waseem Architects</h2>
+          {/* Left Side — Text */}
+          <motion.div
+            initial={{ opacity: 0, x: -60 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -60 }}
+            viewport={{ once: false, amount: 0.3 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+          >
+            <h2 className="font-heading text-2xl md:text-4xl">
+              About Waseem Architects
+            </h2>
             <p className="mt-4 text-muted-foreground">
-              We are an architecture studio focused on modern, sustainable, and human-centered design. Our work blends geometric precision with warm materiality to create spaces that feel effortless.
+              We are an architecture studio focused on modern, sustainable, and
+              human-centered design. Our work blends geometric precision with
+              warm materiality to create spaces that feel effortless.
             </p>
             <div className="mt-6">
               <a href="/about">
-                <Button className="bg-accent text-accent-foreground hover:opacity-95">Learn More</Button>
+                <Button className="bg-accent text-accent-foreground hover:opacity-95">
+                  Learn More
+                </Button>
               </a>
             </div>
           </motion.div>
-          <motion.div initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
+
+          {/* Right Side — Image */}
+          <motion.div
+            initial={{ opacity: 0, x: 60 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 60 }}
+            viewport={{ once: false, amount: 0.3 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+          >
             <img
               src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1400&auto=format&fit=crop"
               alt="Studio interior"
@@ -150,32 +199,25 @@ export default function Index() {
       </section>
 
       {/* Expertise */}
-      <section className="bg-secondary/40 py-16 md:py-20">
-        <div className="container">
-          <h2 className="font-heading text-2xl md:text-3xl">Our Expertise</h2>
-          <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {expertise.map((item) => (
-              <motion.article key={item.title} initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }} className="group rounded-md border bg-white p-6 shadow-sm hover:shadow-md transition-shadow">
-                <div className="text-accent mb-3">{item.icon}</div>
-                <h3 className="font-heading text-lg">{item.title}</h3>
-                <p className="mt-2 text-sm text-muted-foreground">{item.desc}</p>
-              </motion.article>
-            ))}
-          </div>
-        </div>
-      </section>
+        <ExpertiseSection expertise={expertise} />
 
       {/* Featured Projects */}
+     
       <section className="container py-16 md:py-24">
+
         <div className="flex items-end justify-between gap-4">
           <h2 className="font-heading text-2xl md:text-3xl">Featured Projects</h2>
           <a href="/projects" className="text-sm text-foreground/70 hover:text-accent">View All</a>
         </div>
         <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {projects.map((src, i) => (
-            <motion.figure key={i} initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="group relative overflow-hidden rounded-md">
+            <motion.figure
+              data-aos="flip-down"
+
+              key={i} initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="group relative overflow-hidden rounded-md">
               <img
                 src={`${src}`}
+
                 alt={`Project ${i + 1}`}
                 className="h-64 w-full object-cover transition-transform duration-500 group-hover:scale-105"
                 loading="lazy"

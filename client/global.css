@@ -5,6 +5,14 @@
 @tailwind components;
 @tailwind utilities;
 
+
+body{
+  overflow-x: hidden;
+}
+
+/* body {
+  cursor: none;
+} */
 @layer base {
   /**
    * Tailwind CSS theme
