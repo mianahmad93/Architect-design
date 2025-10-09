@@ -5,6 +5,8 @@ import { useSEO, localBusinessSchema } from "@/lib/seo";
 import Aos from "aos";
 import "aos/dist/aos.css";
 import ExpertiseSection from "./Expertise";
+import Landmark from "./Landmark";
+import Featured from "./Featured";
 
 
 
@@ -91,7 +93,7 @@ export default function Index() {
         className="relative min-h-[70svh] md:min-h-[88svh] grid place-items-center overflow-hidden"
         aria-label="Hero"
       >
-        {/* Parallax background */}
+        
         <motion.img
           src={heroImg}
           alt="Modern architectural facade"
@@ -102,16 +104,16 @@ export default function Index() {
           fetchPriority="high"
         />
 
-        {/* Gradient overlay */}
+        
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-transparent" />
 
-        {/* Text content */}
+        
         <div className="relative container text-center text-white">
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: false, amount: 0.3 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.8, type: "spring", stiffness: 100, damping: 15 }}
             className="font-heading text-3xl md:text-5xl lg:text-6xl font-semibold tracking-tight"
           >
             Designing Tomorrow’s Landmarks Today.
@@ -149,12 +151,12 @@ export default function Index() {
             </a>
           </motion.div>
         </div>
-      </section>
+      </section> 
 
       {/* About */}
-      <section id="about" className="container py-16 md:py-24">
+       <section id="about" className="container py-16 md:py-24">
         <div className="grid gap-10 md:grid-cols-2 md:gap-14 items-center">
-          {/* Left Side — Text */}
+          
           <motion.div
             initial={{ opacity: 0, x: -60 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -179,7 +181,7 @@ export default function Index() {
             </div>
           </motion.div>
 
-          {/* Right Side — Image */}
+          
           <motion.div
             initial={{ opacity: 0, x: 60 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -196,14 +198,22 @@ export default function Index() {
             />
           </motion.div>
         </div>
-      </section>
+      </section> 
 
       {/* Expertise */}
-        <ExpertiseSection expertise={expertise} />
+      <ExpertiseSection expertise={expertise} />
+
+
+
+
+      {/* Designing tommorrow landmark */}
+
+      <Landmark />
 
       {/* Featured Projects */}
-     
-      <section className="container py-16 md:py-24">
+      
+      
+     <section className="container py-16 md:py-24">
 
         <div className="flex items-end justify-between gap-4">
           <h2 className="font-heading text-2xl md:text-3xl">Featured Projects</h2>
@@ -228,10 +238,10 @@ export default function Index() {
             </motion.figure>
           ))}
         </div>
-      </section>
+      </section> 
 
-      {/* Testimonials */}
-      <section className="bg-secondary/40 py-16 md:py-20">
+     {/* Testimonials */}
+       <section className="bg-secondary/40 py-16 md:py-20">
         <div className="container">
           <h2 className="font-heading text-2xl md:text-3xl">Client Testimonials</h2>
           <div className="mt-6 overflow-hidden">
@@ -245,10 +255,12 @@ export default function Index() {
             </div>
           </div>
         </div>
-      </section>
+      </section> 
+
+      
 
       {/* Contact */}
-      <section id="contact" className="container py-16 md:py-24">
+       <section id="contact" className="container py-16 md:py-24">
         <div className="grid gap-8 md:grid-cols-2 items-start">
           <div>
             <h2 className="font-heading text-2xl md:text-3xl">Contact Us</h2>
@@ -282,7 +294,7 @@ export default function Index() {
             </div>
           </div>
         </div>
-      </section>
+      </section> 
     </div>
   );
 }
