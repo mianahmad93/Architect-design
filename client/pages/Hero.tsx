@@ -1,31 +1,6 @@
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import type { Variants, Transition } from "framer-motion";
-import { useState, useEffect } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { set } from "date-fns";
-
-const slides = [
-  {
-    image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=2070&auto=format&fit=crop",
-    title: "Modern Residential Design",
-    subtitle: "Creating dream homes with contemporary elegance"
-  },
-  {
-    image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?q=80&w=2053&auto=format&fit=crop",
-    title: "Commercial Architecture",
-    subtitle: "Innovative spaces that inspire business growth"
-  },
-  {
-    image: "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?q=80&w=2070&auto=format&fit=crop",
-    title: "Interior Mastery",
-    subtitle: "Transforming spaces into timeless experiences"
-  },
-  {
-    image: "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?q=80&w=2084&auto=format&fit=crop",
-    title: "Sustainable Living",
-    subtitle: "Eco-friendly designs for a better tomorrow"
-  }
-];
+import { useRef, useEffect } from "react";
 
 const text = "Designing Tomorrow's Landmarks Today.";
 
@@ -47,144 +22,260 @@ const letterVariants: Variants = {
   },
 };
 
-const slideVariants: Variants = {
-  enter: (direction: number) => ({
-    x: direction > 0 ? 1000 : -1000,
-    opacity: 0,
-    scale: 0.8,
-  }),
-  center: {
-    zIndex: 1,
-    x: 0,
-    opacity: 1,
-    scale: 1,
-  },
-  exit: (direction: number) => ({
-    zIndex: 0,
-    x: direction < 0 ? 1000 : -1000,
-    opacity: 0,
-    scale: 0.8,
-  }),
-};
+const ParticlesBackground = () => {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const particles = useRef<any[]>([]);
+  const mousePos = useRef<{ x: number | null; y: number | null }>({ x: null, y: null });
+  const animationRef = useRef<number | null>(null);
 
-const swipeConfidenceThreshold = 10000;
-const swipePower = (offset, velocity) => {
-  return Math.abs(offset) * velocity;
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    let width = window.innerWidth;
+    let height = window.innerHeight;
+    canvas.width = width;
+    canvas.height = height;
+
+    const config = {
+      particleCount: 200,
+      colors: ["#fbbf24", "#f59e0b", "#d97706", "#b45309"],
+      maxDistance: 100,
+      grabDistance: 120,
+      particleSpeed: 0.5,
+      lineOpacity: 0.4,
+      particleOpacity: 0.6,
+      particleSize: 3,
+    };
+
+    class Particle {
+      x: number;
+      y: number;
+      vx: number;
+      vy: number;
+      radius: number;
+      color: string;
+
+      constructor() {
+        this.x = Math.random() * width;
+        this.y = Math.random() * height;
+        this.vx = (Math.random() - 0.5) * config.particleSpeed;
+        this.vy = (Math.random() - 0.5) * config.particleSpeed;
+        this.radius = Math.random() * config.particleSize + 1;
+        this.color = config.colors[Math.floor(Math.random() * config.colors.length)];
+      }
+
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+
+        if (this.x < 0 || this.x > width) this.vx *= -1;
+        if (this.y < 0 || this.y > height) this.vy *= -1;
+
+        // keep within bounds
+        this.x = Math.max(0, Math.min(width, this.x));
+        this.y = Math.max(0, Math.min(height, this.y));
+
+        // gentle damping for smooth motion
+        this.vx *= 0.98;
+        this.vy *= 0.98;
+      }
+
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = this.color;
+        ctx.globalAlpha = config.particleOpacity;
+        ctx.fill();
+        ctx.globalAlpha = 1;
+      }
+    }
+
+    // create initial particles
+    particles.current = [];
+    const density = config.particleCount / 1000;
+    const particleCount = Math.floor((width * height) / 1000 * density);
+
+    for (let i = 0; i < particleCount; i++) {
+      particles.current.push(new Particle());
+    }
+
+    const drawConnections = () => {
+      for (let i = 0; i < particles.current.length; i++) {
+        for (let j = i + 1; j < particles.current.length; j++) {
+          const p1 = particles.current[i];
+          const p2 = particles.current[j];
+          const dx = p1.x - p2.x;
+          const dy = p1.y - p2.y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+
+          if (distance < config.maxDistance) {
+            const opacity = (1 - distance / config.maxDistance) * config.lineOpacity;
+            ctx.beginPath();
+            ctx.strokeStyle = `rgba(251, 191, 36, ${opacity})`;
+            ctx.lineWidth = 1;
+            ctx.moveTo(p1.x, p1.y);
+            ctx.lineTo(p2.x, p2.y);
+            ctx.stroke();
+          }
+        }
+      }
+    };
+
+    const drawMouseConnections = () => {
+      if (mousePos.current.x === null || mousePos.current.y === null) return;
+
+      particles.current.forEach(particle => {
+        const dx = particle.x - mousePos.current.x!;
+        const dy = particle.y - mousePos.current.y!;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        if (distance < config.grabDistance) {
+          // stronger repulsion
+          const force = (1 - distance / config.grabDistance) * 4;
+          const angle = Math.atan2(dy, dx);
+          particle.vx += Math.cos(angle) * force * 0.5;
+          particle.vy += Math.sin(angle) * force * 0.5;
+
+          const opacity = 1 - distance / config.grabDistance;
+          ctx.beginPath();
+          ctx.strokeStyle = `rgba(251, 191, 36, ${opacity})`;
+          ctx.lineWidth = 1;
+          ctx.moveTo(particle.x, particle.y);
+          ctx.lineTo(mousePos.current.x!, mousePos.current.y!);
+          ctx.stroke();
+        }
+      });
+    };
+
+    const animate = () => {
+      ctx.fillStyle = "#1a1a1a";
+      ctx.fillRect(0, 0, width, height);
+
+      particles.current.forEach(particle => {
+        particle.update();
+        particle.draw();
+      });
+
+      drawConnections();
+      drawMouseConnections();
+
+      animationRef.current = requestAnimationFrame(animate);
+    };
+
+    animate();
+
+    // ✅ Mouse events now on window (not canvas)
+    const handleMouseMove = (e: MouseEvent) => {
+      mousePos.current.x = e.clientX;
+      mousePos.current.y = e.clientY;
+    };
+
+    const handleMouseLeave = () => {
+      mousePos.current.x = null;
+      mousePos.current.y = null;
+    };
+
+    const handleResize = () => {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = width;
+      canvas.height = height;
+
+      particles.current = [];
+      const newParticleCount = Math.floor((width * height) / 1000 * density);
+      for (let i = 0; i < newParticleCount; i++) {
+        particles.current.push(new Particle());
+      }
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseleave", handleMouseLeave);
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseleave", handleMouseLeave);
+      window.removeEventListener("resize", handleResize);
+      if (animationRef.current) cancelAnimationFrame(animationRef.current);
+    };
+  }, []);
+
+  return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />;
 };
 
 const Hero = () => {
-  const [[page, direction], setPage] = useState([0, 0]);
-  const [isPaused, setIsPaused] = useState(false);
-
-  const imageIndex = ((page % slides.length) + slides.length) % slides.length;
-
-  const paginate = (newDirection) => {
-    setPage([page + newDirection, newDirection]);
-  };
-
-  useEffect(() => {
-    if (!isPaused) return
-
-    const timer = setInterval(() => {
-      setPage((prev) => [prev[0] + 1, 1]);
-    }, 5000);
-    return () => clearInterval(timer);
-  }, [isPaused]);
-
   return (
     <section
       className="relative min-h-[70svh] md:min-h-[88svh] overflow-hidden"
-      aria-label="Hero Carousel"
-      onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => setIsPaused(false)}
+      aria-label="Hero Section"
     >
-      <AnimatePresence initial={false} custom={direction}>
-        <motion.div
-          key={page}
-          custom={direction}
-          variants={slideVariants}
-          initial="enter"
-          animate="center"
-          exit="exit"
-          transition={{
-            x: { type: "spring", stiffness: 300, damping: 30 },
-            opacity: { duration: 0.5 },
-            scale: { duration: 0.5 }
-          }}
-          drag="x"
-          dragConstraints={{ left: 0, right: 0 }}
-          dragElastic={1}
-          onDragEnd={(e, { offset, velocity }) => {
-            const swipe = swipePower(offset.x, velocity.x);
-            if (swipe < -swipeConfidenceThreshold) {
-              paginate(1);
-            } else if (swipe > swipeConfidenceThreshold) {
-              paginate(-1);
-            }
-          }}
-          className="absolute inset-0"
-        >
-          <motion.img
-            src={slides[imageIndex].image}
-            alt={slides[imageIndex].title}
-            className="absolute inset-0 h-full w-full object-cover"
-            initial={{ scale: 1.2 }}
-            animate={{ scale: 1 }}
-            transition={{ duration: 7, ease: "easeOut" }}
-            loading="eager"
-          />
+      {/* Background Particles */}
+      <ParticlesBackground />
 
-          <motion.div
-            className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-black/20"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8 }}
-          />
-        </motion.div>
-      </AnimatePresence>
+      {/* Gradient Overlay (does not block mouse) */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-black/30 pointer-events-none" />
 
-      <div className="relative z-10 h-full min-h-[70svh] md:min-h-[88svh] flex items-center justify-center">
+      {/* Foreground Content */}
+      <div className="relative z-10 h-full flex items-center justify-center">
         <div className="container text-center text-white px-4 md:px-8 max-w-5xl">
           <motion.div
-            key={`content-${page}`}
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.3 }}
             className="mb-6"
           >
-            <span className="inline-block px-4 py-1.5 mb-4 text-xs md:text-sm font-medium bg-white/20 backdrop-blur-sm rounded-full border border-white/30">
-              {slides[imageIndex].subtitle}
+            <span className="inline-block px-4 py-1.5 mb-4 mt-10 text-xs md:text-sm font-medium bg-yellow-400/20 backdrop-blur-sm rounded-full border border-yellow-400/30 text-yellow-300">
+              Creating dream homes with contemporary elegance
             </span>
             <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold mb-2">
-              {slides[imageIndex].title}
+              Modern Residential Design
             </h2>
           </motion.div>
+<motion.h1
+  variants={containerVariants}
+  initial="hidden"
+  animate="visible"
+  className="font-heading text-3xl md:text-5xl lg:text-6xl font-semibold tracking-tight flex justify-center flex-wrap gap-1 mb-6"
+>
+  {text.split("").map((char, index) => (
+    <motion.span
+      key={index}
+      variants={letterVariants}
+      className="inline-block"
+      animate={{
+        y: [0, -8, 0],
+        color: ["#fde047", "#facc15", "#fbbf24", "#fde047"],
+        textShadow: [
+          "0 0 5px rgba(255,255,0,0.3)",
+          "0 0 15px rgba(255,255,0,0.8)",
+          "0 0 5px rgba(255,255,0,0.3)",
+        ],
+      }}
+      transition={{
+        duration: 3,
+        delay: index * 0.12,
+        repeat: Infinity,
+        ease: "easeInOut",
+      }}
+    >
+      {char === " " ? "\u00A0" : char}
+    </motion.span>
+  ))}
+</motion.h1>
 
-          <motion.h1
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-            className="font-heading text-3xl md:text-5xl lg:text-6xl font-semibold tracking-tight flex justify-center flex-wrap gap-1 mb-6"
-          >
-            {text.split("").map((char, index) => (
-              <motion.span
-                key={`${page}-${index}`}
-                variants={letterVariants}
-                className="inline-block"
-              >
-                {char === " " ? "\u00A0" : char}
-              </motion.span>
-            ))}
-          </motion.h1>
 
           <motion.p
-            key={`desc-${page}`}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.8 }}
             className="mx-auto max-w-2xl text-sm md:text-base lg:text-lg text-white/90 mb-8"
           >
-            Architects crafts iconic residential, commercial, and interior spaces with precision and purpose.
+            Architects crafts iconic residential, commercial, and interior spaces with precision
+            and purpose.
           </motion.p>
 
           <motion.div
@@ -205,43 +296,12 @@ const Hero = () => {
               href="#about"
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
-              className="border-2 border-white/70 text-white bg-white/10 backdrop-blur-sm hover:bg-white/20 px-6 md:px-8 py-3 rounded-lg cursor-pointer transition"
+              className="border-2 border-yellow-400/70 text-yellow-400 bg-yellow-400/10 backdrop-blur-sm hover:bg-yellow-400/20 px-6 md:px-8 py-3 rounded-lg cursor-pointer transition"
             >
               Learn More
             </motion.a>
           </motion.div>
         </div>
-      </div>
-
-      {/* Navigation Arrows */}
-      {/* <button
-        onClick={() => paginate(-1)}
-        className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 z-20 bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white p-2 md:p-3 rounded-full transition group"
-        aria-label="Previous slide"
-      >
-        <ChevronLeft className="w-5 h-5 md:w-6 md:h-6 group-hover:-translate-x-0.5 transition" />
-      </button>
-      <button
-        onClick={() => paginate(1)}
-        className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 z-20 bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white p-2 md:p-3 rounded-full transition group"
-        aria-label="Next slide"
-      >
-        <ChevronRight className="w-5 h-5 md:w-6 md:h-6 group-hover:translate-x-0.5 transition" />
-      </button> */}
-
-      {/* Dots Indicator */}
-      <div className="absolute bottom-4 md:bottom-8 left-1/2 -translate-x-1/2 z-20 flex gap-2">
-        {slides.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => setPage([index, index > imageIndex ? 1 : -1])}
-            className={`transition-all ${index === imageIndex
-              ? "w-8 md:w-10 bg-white"
-              : "w-2 md:w-2.5 bg-white/50 hover:bg-white/70"
-              } h-2 md:h-2.5 rounded-full`}
-            aria-label={`Go to slide ${index + 1}`}
-          />
-        ))}
       </div>
     </section>
   );

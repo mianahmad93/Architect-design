@@ -43,8 +43,8 @@ export default function Index() {
     >
       <Hero />
       <IndexAbout />
-      <ExpertiseSection />
       <Landmark />
+      <ExpertiseSection />
       {/* <Featured /> */}
       {/* <Testimonials /> */}
       {/* <IndexContact /> */}

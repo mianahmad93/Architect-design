@@ -71,43 +71,76 @@ export function Layout() {
       </a>
 
       {/* Navbar */}
-      <header className="sticky top-0 z-50 w-full border-b bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/60">
-        <div className="container flex h-16 items-center justify-between">
-          <Link to="/" className="flex items-center gap-2">
-            <span className="inline-block h-8 w-8 rounded-sm bg-accent" aria-hidden />
-            <span className="font-heading text-lg tracking-wide">waaseem</span>
-          </Link>
-          <nav className="hidden md:flex items-center gap-1" aria-label="Main navigation">
-            {navItems.map((item) => (
-              <NavLink key={item.to} to={item.to} className={activeClass} end={item.to === "/"}>
-                {item.label}
-              </NavLink>
-            ))}
-          </nav>
-          <div className="md:hidden">
-            <Button aria-label="Toggle menu" variant="ghost" size="icon" onClick={() => setOpen((v) => !v)}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="3" y1="12" x2="21" y2="12" />
-                <line x1="3" y1="6" x2="21" y2="6" />
-                <line x1="3" y1="18" x2="21" y2="18" />
-              </svg>
-            </Button>
-          </div>
+    {/* Navbar */}
+<header className="sticky top-0 z-50 w-full border-b border-yellow-400/20 bg-[#1a1a1a] transition-colors duration-300">
+  {/* Gradient Overlay */}
+  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-black/30 pointer-events-none" />
+  
+  <div className="container relative z-10 flex h-16 items-center justify-between">
+    <Link to="/" className="flex items-center gap-2">
+      <span className="inline-block h-8 w-8 rounded-sm bg-accent" aria-hidden />
+      <span className="font-heading text-lg tracking-wide text-white">waaseem</span>
+    </Link>
+    <nav className="hidden md:flex items-center gap-1" aria-label="Main navigation">
+      {navItems.map((item) => (
+        <NavLink 
+          key={item.to} 
+          to={item.to} 
+          className={({ isActive }) =>
+            cn(
+              "px-3 py-2 text-sm tracking-wide transition-colors rounded-md",
+              "hover:text-yellow-400 hover:bg-white/10",
+              isActive ? "text-yellow-400 bg-yellow-400/20" : "text-gray-200"
+            )
+          }
+          end={item.to === "/"}
+        >
+          {item.label}
+        </NavLink>
+      ))}
+    </nav>
+    <div className="md:hidden">
+      <Button aria-label="Toggle menu" variant="ghost" size="icon" onClick={() => setOpen((v) => !v)} className="text-white hover:bg-white/10">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <line x1="3" y1="12" x2="21" y2="12" />
+          <line x1="3" y1="6" x2="21" y2="6" />
+          <line x1="3" y1="18" x2="21" y2="18" />
+        </svg>
+      </Button>
+    </div>
+  </div>
+  <AnimatePresence>
+    {open && (
+      <motion.div 
+        initial={{ opacity: 0, height: 0 }} 
+        animate={{ opacity: 1, height: "auto" }} 
+        exit={{ opacity: 0, height: 0 }} 
+        className="border-t border-yellow-400/20 md:hidden bg-[#1a1a1a] relative"
+      >
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-black/30 pointer-events-none" />
+        <div className="container relative z-10 py-2 flex flex-col">
+          {navItems.map((item) => (
+            <NavLink 
+              key={item.to} 
+              to={item.to} 
+              className={({ isActive }) =>
+                cn(
+                  "px-3 py-2 text-sm tracking-wide transition-colors rounded-md",
+                  "hover:text-yellow-400 hover:bg-white/10",
+                  isActive ? "text-yellow-400 bg-yellow-400/20" : "text-gray-200"
+                )
+              }
+              end={item.to === "/"} 
+              onClick={() => setOpen(false)}
+            >
+              {item.label}
+            </NavLink>
+          ))}
         </div>
-        <AnimatePresence>
-          {open && (
-            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="border-t md:hidden bg-white">
-              <div className="container py-2 flex flex-col">
-                {navItems.map((item) => (
-                  <NavLink key={item.to} to={item.to} className={activeClass} end={item.to === "/"} onClick={() => setOpen(false)}>
-                    {item.label}
-                  </NavLink>
-                ))}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </header>
+      </motion.div>
+    )}
+  </AnimatePresence>
+</header>
 
       {/* Main Content */}
       <main id="content" className="flex-1">
