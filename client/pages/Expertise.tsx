@@ -5,85 +5,173 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
-export default function ExpertiseSection({ expertise }: { expertise: any[] }) {
-    const sectionRef = useRef<HTMLDivElement>(null);
+const expertise = [
+  {
+    title: "Residential",
+    desc: "Timeless homes with natural light, clean lines, and functional elegance.",
+    icon: (
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <path d="M3 11l9-8 9 8" />
+        <path d="M9 22V12h6v10" />
+        <path d="M21 22H3" />
+      </svg>
+    ),
+  },
+  {
+    title: "Commercial",
+    desc: "Modern workplaces and retail spaces that elevate your brand.",
+    icon: (
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <path d="M3 22h18" />
+        <path d="M6 18V5h12v13" />
+        <path d="M8 8h8" />
+      </svg>
+    ),
+  },
+  {
+    title: "Interior Design",
+    desc: "Minimal interiors with premium materials and warm palettes.",
+    icon: (
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <path d="M4 22h16" />
+        <path d="M7 22V7h10v15" />
+        <path d="M12 7V2" />
+      </svg>
+    ),
+  },
+  {
+    title: "Landscape",
+    desc: "Connecting indoor and outdoor spaces with harmony and simplicity.",
+    icon: (
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <path d="M4 20h16" />
+        <path d="M4 14l4-4 4 4 4-4 4 4" />
+      </svg>
+    ),
+  },
+  {
+    title: "Urban Design",
+    desc: "Sustainable and efficient community-focused planning solutions.",
+    icon: (
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <path d="M3 22h18" />
+        <path d="M6 18V8h4v10" />
+        <path d="M14 18V4h4v14" />
+      </svg>
+    ),
+  },
+];
 
-    useEffect(() => {
-        const ctx = gsap.context((self) => {
-                const cards = self.selector(".expertise-card") as HTMLElement[];
+export default function ExpertiseSection() {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-                // Animate heading (scoped)
-                gsap.from(self.selector(".expertise-heading"), {
-                    opacity: 0,
-                    y: -50,
-                    duration: 0.8,
-                    ease: "power2.out",
-                    scrollTrigger: {
-                        trigger: sectionRef.current,
-                        start: "top 85%",
-                        end: "bottom 20%",
-                        scrub: true,
-                    },
-                });
+  useEffect(() => {
+    const section = sectionRef.current;
+    const scrollContainer = scrollContainerRef.current;
 
-                // Animate cards with a scroll-triggered stagger (scoped)
-                gsap.from(cards, {
-                    y: 80,
-                    opacity: 0,
-                    rotateX: 10,
-                    scale: 0.95,
-                    duration: 0.8,
-                    ease: "power3.out",
-                    stagger: 0.25,
-                    scrollTrigger: {
-                        trigger: sectionRef.current,
-                        start: "top 80%",
-                        toggleActions: "play none none reverse",
-                    },
-                });
+    const ctx = gsap.context(() => {
+      const totalScrollWidth = scrollContainer.scrollWidth;
+      const viewportWidth = section.offsetWidth;
+      const scrollDistance = totalScrollWidth - viewportWidth;
 
-                // Ensure ScrollTrigger recalculates positions after setup
-                ScrollTrigger.refresh();
-    }, sectionRef.current);
+      // Main horizontal scroll animation
+      const horizontalTween: gsap.core.Tween = gsap.to(scrollContainer, {
+        x: -scrollDistance,
+        ease: "none",
+        scrollTrigger: {
+          id: "horizontalScroll",
+          trigger: section,
+          start: "top top",
+          end: () => `+=${scrollDistance}`,
+          scrub: 1,
+          pin: true,
+          anticipatePin: 1,
+        },
+      });
 
-        return () => ctx.revert();
-    }, []);
+      // Animate each card’s internal elements
+      const cards = gsap.utils.toArray<HTMLElement>(".expertise-card");
 
-    return (
-        <section
-            ref={sectionRef}
-            className="relative bg-secondary/40 py-16 md:py-24 overflow-hidden"
-        >
-            {/* Subtle gradient background animation */}
-            <div className="absolute inset-0 bg-gradient-to-b from-white/20 via-transparent to-white/10 pointer-events-none" />
+      cards.forEach((card, i) => {
+        const tl = gsap.timeline({
+          scrollTrigger: {
+            trigger: card,
+            // pass the horizontal tween (a gsap Animation) as the containerAnimation
+            containerAnimation: horizontalTween,
+            start: "left center",
+            end: "right center",
+            scrub: true,
+          },
+        });
 
-            <div className="container relative">
-                <h2 className="expertise-heading font-heading text-3xl md:text-4xl text-center mb-4">
-                    Our Expertise
-                </h2>
-                <p className="text-center text-muted-foreground max-w-xl mx-auto mb-12">
-                    Blending creativity, innovation, and modern architecture to craft spaces
-                    that inspire.
-                </p>
+        const directions = ["y: -50", "x: 50", "y: 50", "x: -50"];
+        const randomDir = directions[i % directions.length];
 
-                <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-                    {expertise.map((item, i) => (
-                        <article
-                            key={item.title}
-                            className="expertise-card group relative rounded-xl border bg-white/80 backdrop-blur-sm p-8 shadow-md hover:shadow-2xl transition-all duration-700 hover:-translate-y-2"
-                        >
-                            <div className="text-accent mb-4 text-4xl">{item.icon}</div>
-                            <h3 className="font-heading text-xl">{item.title}</h3>
-                            <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-                                {item.desc}
-                            </p>
+        tl.from(card.querySelector(".icon"), {
+          opacity: 0,
+          duration: 1,
+          [randomDir.split(": ")[0]]: Number(randomDir.split(": ")[1]),
+        })
+          .from(
+            card.querySelector(".title"),
+            {
+              opacity: 0,
+              x: i % 2 === 0 ? -40 : 40,
+              duration: 1,
+            },
+            "-=0.5"
+          )
+          .from(
+            card.querySelector(".desc"),
+            {
+              opacity: 0,
+              y: i % 2 === 0 ? 40 : -40,
+              duration: 1,
+            },
+            "-=0.6"
+          );
+      });
 
-                            {/* Decorative accent line */}
-                            <div className="absolute left-0 bottom-0 w-0 h-[3px] bg-accent transition-all duration-700 group-hover:w-full" />
-                        </article>
-                    ))}
-                </div>
-            </div>
-        </section>
-    );
+      ScrollTrigger.refresh();
+    }, section);
+
+    return () => ctx.revert();
+  }, []);
+
+  return (
+    <section
+      ref={sectionRef}
+      className="relative w-full bg-gradient-to-r from-gray-50 via-white to-gray-100 py-20 overflow-hidden"
+    >
+      <div className="container mx-auto mb-12 text-center">
+        <h2 className="font-heading text-4xl md:text-5xl font-semibold mb-4">
+          Our Expertise
+        </h2>
+        <p className="text-muted-foreground max-w-2xl mx-auto text-base md:text-lg">
+          Scroll to explore our areas of architectural mastery — each crafted with precision and innovation.
+        </p>
+      </div>
+
+      {/* Horizontal scroll container */}
+      <div
+        ref={scrollContainerRef}
+        className="flex gap-10 px-10 md:px-20"
+        style={{ width: `${expertise.length * 80}vw` }}
+      >
+        {expertise.map((item, i) => (
+          <div
+            key={i}
+            className="expertise-card flex-shrink-0 w-[70vw] md:w-[60vw] bg-white rounded-3xl shadow-xl border border-gray-200 p-10 flex flex-col justify-center items-start"
+          >
+            <div className="icon text-accent text-5xl mb-6">{item.icon}</div>
+            <h3 className="title font-heading text-2xl md:text-3xl mb-3">{item.title}</h3>
+            <p className="desc text-gray-600 text-base md:text-lg leading-relaxed">
+              {item.desc}
+            </p>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
 }
