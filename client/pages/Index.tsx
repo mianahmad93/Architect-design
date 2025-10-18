@@ -9,7 +9,7 @@ import ExpertiseSection from "./Expertise";
 import Landmark from "./Landmark";
 import Hero from "./Hero";
 import IndexAbout from "./IndexAbout";
-import Testimonials from "./Testimonials";
+import {Testimonials} from "./Testimonials";
 import Featured from "./Featured";
 import IndexContact from "./IndexContact";
 
@@ -46,8 +46,8 @@ export default function Index() {
        <Landmark />
 
       <Featured />
+      <Testimonials />
       <ExpertiseSection />
-      {/* <Testimonials /> */}
       {/* <IndexContact /> */}
     </motion.div>
   );

@@ -17,22 +17,7 @@ const ExpertiseSection = () => {
       ref={containerRef}
       className="relative bg-zinc-950 py-24 px-4 overflow-hidden"
     >
-      {/* ✅ Fullscreen Parallax Background */}
-      <motion.div
-        style={{ y: y1 }}
-        className="absolute inset-0 w-full h-full"
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 0.08 }}
-        transition={{ duration: 1.2 }}
-      >
-        <img
-          src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1600&auto=format&fit=crop"
-          alt="Architecture background"
-          className="w-full h-full object-cover"
-        />
-        {/* Subtle overlay for contrast */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/40 to-black/80" />
-      </motion.div>
+    
 
       {/* Content Grid */}
       <div className="relative z-10 max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
