@@ -1,177 +1,88 @@
-"use client";
-import { useEffect, useRef } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { useRef } from "react";
+import { Phone, Compass, Award } from "lucide-react";
 
-gsap.registerPlugin(ScrollTrigger);
+const ExpertiseSection = () => {
+  const containerRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start end", "end start"],
+  });
 
-const expertise = [
-  {
-    title: "Residential",
-    desc: "Timeless homes with natural light, clean lines, and functional elegance.",
-    icon: (
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-        <path d="M3 11l9-8 9 8" />
-        <path d="M9 22V12h6v10" />
-        <path d="M21 22H3" />
-      </svg>
-    ),
-  },
-  {
-    title: "Commercial",
-    desc: "Modern workplaces and retail spaces that elevate your brand.",
-    icon: (
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-        <path d="M3 22h18" />
-        <path d="M6 18V5h12v13" />
-        <path d="M8 8h8" />
-      </svg>
-    ),
-  },
-  {
-    title: "Interior Design",
-    desc: "Minimal interiors with premium materials and warm palettes.",
-    icon: (
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-        <path d="M4 22h16" />
-        <path d="M7 22V7h10v15" />
-        <path d="M12 7V2" />
-      </svg>
-    ),
-  },
-  {
-    title: "Landscape",
-    desc: "Connecting indoor and outdoor spaces with harmony and simplicity.",
-    icon: (
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-        <path d="M4 20h16" />
-        <path d="M4 14l4-4 4 4 4-4 4 4" />
-      </svg>
-    ),
-  },
-  {
-    title: "Urban Design",
-    desc: "Sustainable and efficient community-focused planning solutions.",
-    icon: (
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-        <path d="M3 22h18" />
-        <path d="M6 18V8h4v10" />
-        <path d="M14 18V4h4v14" />
-      </svg>
-    ),
-  },
-];
-
-export default function ExpertiseSection() {
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const section = sectionRef.current;
-    const scrollContainer = scrollContainerRef.current;
-
-    const ctx = gsap.context(() => {
-      const totalScrollWidth = scrollContainer.scrollWidth;
-      const viewportWidth = section.offsetWidth;
-      const scrollDistance = totalScrollWidth - viewportWidth;
-
-      // Main horizontal scroll animation
-      const horizontalTween: gsap.core.Tween = gsap.to(scrollContainer, {
-        x: -scrollDistance,
-        ease: "none",
-        scrollTrigger: {
-          id: "horizontalScroll",
-          trigger: section,
-          start: "top top",
-          end: () => `+=${scrollDistance}`,
-          scrub: 1,
-          pin: true,
-          anticipatePin: 1,
-        },
-      });
-
-      // Animate each card’s internal elements
-      const cards = gsap.utils.toArray<HTMLElement>(".expertise-card");
-
-      cards.forEach((card, i) => {
-        const tl = gsap.timeline({
-          scrollTrigger: {
-            trigger: card,
-            // pass the horizontal tween (a gsap Animation) as the containerAnimation
-            containerAnimation: horizontalTween,
-            start: "left center",
-            end: "right center",
-            scrub: true,
-          },
-        });
-
-        const directions = ["y: -50", "x: 50", "y: 50", "x: -50"];
-        const randomDir = directions[i % directions.length];
-
-        tl.from(card.querySelector(".icon"), {
-          opacity: 0,
-          duration: 1,
-          [randomDir.split(": ")[0]]: Number(randomDir.split(": ")[1]),
-        })
-          .from(
-            card.querySelector(".title"),
-            {
-              opacity: 0,
-              x: i % 2 === 0 ? -40 : 40,
-              duration: 1,
-            },
-            "-=0.5"
-          )
-          .from(
-            card.querySelector(".desc"),
-            {
-              opacity: 0,
-              y: i % 2 === 0 ? 40 : -40,
-              duration: 1,
-            },
-            "-=0.6"
-          );
-      });
-
-      ScrollTrigger.refresh();
-    }, section);
-
-    return () => ctx.revert();
-  }, []);
+  // Parallax motion
+  const y1 = useTransform(scrollYProgress, [0, 1], [200, -200]);
 
   return (
     <section
-      ref={sectionRef}
-      className="relative w-full bg-gradient-to-r from-gray-50 via-white to-gray-100 py-20 overflow-hidden"
+      ref={containerRef}
+      className="relative bg-zinc-950 py-24 px-4 overflow-hidden"
     >
-      <div className="container mx-auto mb-12 text-center">
-        <h2 className="font-heading text-4xl md:text-5xl font-semibold mb-4">
-          Our Expertise
-        </h2>
-        <p className="text-muted-foreground max-w-2xl mx-auto text-base md:text-lg">
-          Scroll to explore our areas of architectural mastery — each crafted with precision and innovation.
-        </p>
-      </div>
-
-      {/* Horizontal scroll container */}
-      <div
-        ref={scrollContainerRef}
-        className="flex gap-10 px-10 md:px-20"
-        style={{ width: `${expertise.length * 80}vw` }}
+      {/* ✅ Fullscreen Parallax Background */}
+      <motion.div
+        style={{ y: y1 }}
+        className="absolute inset-0 w-full h-full"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 0.08 }}
+        transition={{ duration: 1.2 }}
       >
-        {expertise.map((item, i) => (
-          <div
-            key={i}
-            className="expertise-card flex-shrink-0 w-[70vw] md:w-[60vw] bg-white rounded-3xl shadow-xl border border-gray-200 p-10 flex flex-col justify-center items-start"
+        <img
+          src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1600&auto=format&fit=crop"
+          alt="Architecture background"
+          className="w-full h-full object-cover"
+        />
+        {/* Subtle overlay for contrast */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/40 to-black/80" />
+      </motion.div>
+
+      {/* Content Grid */}
+      <div className="relative z-10 max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {[
+          {
+            icon: <Compass className="w-8 h-8 text-yellow-400" />,
+            title: "Design Excellence",
+            text: "Creating innovative architectural solutions that blend functionality with aesthetic beauty, tailored to your vision.",
+            button: "LEARN MORE",
+          },
+          {
+            icon: <Award className="w-8 h-8 text-yellow-400" />,
+            title: "Client Ratings",
+            text: "We exceed expectations and deliver projects that our clients proudly recommend with a 4.9+ satisfaction score.",
+            button: "LEARN MORE",
+          },
+          {
+            icon: <Phone className="w-8 h-8 text-yellow-400" />,
+            title: "Premium Support",
+            text: "Prioritizing customer support to enhance satisfaction, loyalty, and long-term success in every project.",
+            button: "CALL NOW",
+          },
+        ].map((card, index) => (
+          <motion.div
+            key={index}
+            initial={{ opacity: 0, y: 60 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, delay: index * 0.05, ease: "easeOut" }}
+            viewport={{ once: false, amount: 0.3 }}
+            className="border border-yellow-500/60 rounded-2xl p-8 backdrop-blur-sm bg-transparent shadow-lg hover:shadow-yellow-400/40 hover:scale-[1.03] transition-all duration-200"
           >
-            <div className="icon text-accent text-5xl mb-6">{item.icon}</div>
-            <h3 className="title font-heading text-2xl md:text-3xl mb-3">{item.title}</h3>
-            <p className="desc text-gray-600 text-base md:text-lg leading-relaxed">
-              {item.desc}
-            </p>
-          </div>
+            <div className="flex flex-col items-start text-left">
+              <div className="w-14 h-14 border border-yellow-500/50 rounded-full flex items-center justify-center mb-5">
+                {card.icon}
+              </div>
+              <h3 className="text-2xl font-bold text-white mb-3">
+                {card.title}
+              </h3>
+              <p className="text-white/85 text-sm leading-relaxed mb-6">
+                {card.text}
+              </p>
+              <button className="border border-yellow-500/60 text-yellow-400 font-semibold py-2.5 px-6 rounded-lg hover:bg-yellow-500/10 transition-all duration-200">
+                {card.button}
+              </button>
+            </div>
+          </motion.div>
         ))}
       </div>
     </section>
   );
-}
+};
+
+export default ExpertiseSection;

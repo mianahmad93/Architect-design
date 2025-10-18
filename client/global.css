@@ -6,7 +6,7 @@
 @tailwind utilities;
 
 
-body{
+body {
   overflow-x: hidden;
 }
 
@@ -14,14 +14,17 @@ body{
   cursor: none;
 } */
 @layer base {
+
   /**
    * Tailwind CSS theme
    * tailwind.config.ts expects the following color variables to be expressed as HSL values.
    * A different format will require also updating the theme in tailwind.config.ts.
   */
   :root {
-    --background: 0 0% 100%; /* white */
-    --foreground: 222.2 84% 4.9%; /* near-black */
+    --background: 0 0% 100%;
+    /* white */
+    --foreground: 222.2 84% 4.9%;
+    /* near-black */
 
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
@@ -29,7 +32,8 @@ body{
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 0 0% 7%; /* deep neutral for headers/buttons */
+    --primary: 0 0% 7%;
+    /* deep neutral for headers/buttons */
     --primary-foreground: 210 40% 98%;
 
     --secondary: 210 20% 96%;
@@ -108,15 +112,39 @@ body{
 }
 
 @layer base {
-  html { scroll-behavior: smooth; }
+  html {
+    scroll-behavior: smooth;
+    background-color: #1a1a1a;
+    /* Same as hero particles background */
+  }
 
   * {
     @apply border-border;
   }
 
   body {
-    @apply bg-background text-foreground font-sans antialiased;
+    @apply text-foreground font-sans antialiased;
+    background-color: #1a1a1a;
+    /* Fixed dark background for entire site */
+    color: #ffffff;
+    /* White text for better contrast */
   }
 
-  h1, h2, h3, h4, h5, h6 { font-family: theme("fontFamily.heading"); }
+  /* Ensure all main sections have consistent background */
+  main {
+    background-color: #1a1a1a;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: theme("fontFamily.heading");
+    color: #ffffff;
+    /* Ensure headings are visible */
+  }
 }
+
+

@@ -10,7 +10,7 @@ import Landmark from "./Landmark";
 import Hero from "./Hero";
 import IndexAbout from "./IndexAbout";
 import Testimonials from "./Testimonials";
-import {Featured} from "./Featured";
+import Featured from "./Featured";
 import IndexContact from "./IndexContact";
 
 export default function Index() {
@@ -42,11 +42,11 @@ export default function Index() {
       transition={{ duration: 0.8, ease: [0.65, 0.05, 0.36, 1] }}
     >
       <Hero />
-      {/* <IndexAbout /> */}
-
+      <IndexAbout />
        <Landmark />
-      {/* <ExpertiseSection /> */}
+
       <Featured />
+      <ExpertiseSection />
       {/* <Testimonials /> */}
       {/* <IndexContact /> */}
     </motion.div>

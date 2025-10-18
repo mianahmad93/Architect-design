@@ -41,7 +41,7 @@ const ParticlesBackground = () => {
     canvas.height = height;
 
     const config = {
-      particleCount: 200,
+      particleCount: 100,
       colors: ["#fbbf24", "#f59e0b", "#d97706", "#b45309"],
       maxDistance: 100,
       grabDistance: 120,
@@ -72,14 +72,20 @@ const ParticlesBackground = () => {
         this.x += this.vx;
         this.y += this.vy;
 
+        // Add constant gentle movement (AUTO MOVEMENT)
+        if (Math.abs(this.vx) < 0.3) {
+          this.vx += (Math.random() - 0.5) * 0.1;
+        }
+        if (Math.abs(this.vy) < 0.3) {
+          this.vy += (Math.random() - 0.5) * 0.1;
+        }
+
         if (this.x < 0 || this.x > width) this.vx *= -1;
         if (this.y < 0 || this.y > height) this.vy *= -1;
 
-        // keep within bounds
         this.x = Math.max(0, Math.min(width, this.x));
         this.y = Math.max(0, Math.min(height, this.y));
 
-        // gentle damping for smooth motion
         this.vx *= 0.98;
         this.vy *= 0.98;
       }
@@ -204,7 +210,7 @@ const ParticlesBackground = () => {
     };
   }, []);
 
-  return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />;
+  return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full cursor-crosshair" />;
 };
 
 const Hero = () => {
@@ -235,37 +241,37 @@ const Hero = () => {
               Modern Residential Design
             </h2>
           </motion.div>
-<motion.h1
-  variants={containerVariants}
-  initial="hidden"
-  animate="visible"
-  className="font-heading text-3xl md:text-5xl lg:text-6xl font-semibold tracking-tight flex justify-center flex-wrap gap-1 mb-6"
->
-  {text.split("").map((char, index) => (
-    <motion.span
-      key={index}
-      variants={letterVariants}
-      className="inline-block"
-      animate={{
-        y: [0, -8, 0],
-        color: ["#fde047", "#facc15", "#fbbf24", "#fde047"],
-        textShadow: [
-          "0 0 5px rgba(255,255,0,0.3)",
-          "0 0 15px rgba(255,255,0,0.8)",
-          "0 0 5px rgba(255,255,0,0.3)",
-        ],
-      }}
-      transition={{
-        duration: 3,
-        delay: index * 0.12,
-        repeat: Infinity,
-        ease: "easeInOut",
-      }}
-    >
-      {char === " " ? "\u00A0" : char}
-    </motion.span>
-  ))}
-</motion.h1>
+          <motion.h1
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="font-heading text-3xl md:text-5xl lg:text-6xl font-semibold tracking-tight flex justify-center flex-wrap gap-1 mb-6"
+          >
+            {text.split("").map((char, index) => (
+              <motion.span
+                key={index}
+                variants={letterVariants}
+                className="inline-block"
+                animate={{
+                  y: [0, -8, 0],
+                  color: ["#fde047", "#facc15", "#fbbf24", "#fde047"],
+                  textShadow: [
+                    "0 0 5px rgba(255,255,0,0.3)",
+                    "0 0 15px rgba(255,255,0,0.8)",
+                    "0 0 5px rgba(255,255,0,0.3)",
+                  ],
+                }}
+                transition={{
+                  duration: 3,
+                  delay: index * 0.12,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+              >
+                {char === " " ? "\u00A0" : char}
+              </motion.span>
+            ))}
+          </motion.h1>
 
 
           <motion.p
