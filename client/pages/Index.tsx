@@ -47,7 +47,7 @@ export default function Index() {
 
       <Featured />
       <Testimonials />
-      <ExpertiseSection />
+      {/* <ExpertiseSection /> */}
       {/* <IndexContact /> */}
     </motion.div>
   );

@@ -136,7 +136,7 @@ const IndexAbout = () => {
               <img
                 src="https://images.unsplash.com/photo-1501594907352-04cda38ebc29?auto=format&fit=crop&w=900&q=80"
                 alt="Modern Architecture Exterior"
-                className="object-cover w-full h-[500px]"
+                className="object-cover w-full h-[400px]"
               />
             </div>
 

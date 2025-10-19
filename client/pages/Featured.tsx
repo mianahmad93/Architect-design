@@ -32,7 +32,7 @@ export default function Featured() {
   );
 }
 
-const SECTION_HEIGHT = 1200;
+const SECTION_HEIGHT = 1500;
 
 const Hero = () => {
   return (
@@ -77,6 +77,7 @@ const CenterImage = () => {
           "url(https://images.unsplash.com/photo-1487958449943-2429e8be8625?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D)",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
+        zIndex: 10,
       }}
     />
   );
@@ -84,34 +85,34 @@ const CenterImage = () => {
 
 const ParallaxImages = () => {
   return (
-    <div className="mx-auto max-w-5xl px-4 pt-[200px]">
+    <div className="mx-auto max-w-5xl px-4 pt-[200px] relative z-0">
       <ParallaxImg
         src="https://images.unsplash.com/photo-1511818966892-d7d671e672a2?q=80&w=2671&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
         alt="Modern architecture exterior"
         start={-200}
         end={200}
-        className="w-1/3"
+        className="w-full md:w-1/3 mb-4 md:mb-0"
       />
       <ParallaxImg
         src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?q=80&w=2653&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
         alt="Contemporary building design"
         start={200}
         end={-250}
-        className="mx-auto w-2/3"
+        className="mx-auto w-full md:w-2/3 mb-4 md:mb-0"
       />
       <ParallaxImg
         src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
         alt="Luxury residential architecture"
         start={-200}
         end={200}
-        className="ml-auto w-1/3"
+        className="ml-auto w-full md:w-1/3 mb-4 md:mb-0"
       />
       <ParallaxImg
         src="https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
         alt="Architectural interior design"
         start={0}
         end={-500}
-        className="ml-24 w-5/12"
+        className="ml-0 md:ml-24 w-full md:w-5/12 mb-4 md:mb-0"
       />
     </div>
   );
@@ -208,7 +209,7 @@ const ProjectItem = ({ title, year, location, type }) => {
       initial={{ y: 48, opacity: 0 }}
       whileInView={{ y: 0, opacity: 1 }}
       transition={{ ease: "easeInOut", duration: 0.75 }}
-      className="group mb-9 flex items-center justify-between border-b border-zinc-800 px-3 pb-9 cursor-pointer hover:border-zinc-600 transition-colors"
+      className="group mb-9 flex flex-col md:flex-row items-start md:items-center justify-between border-b border-zinc-800 px-3 pb-9 cursor-pointer hover:border-zinc-600 transition-colors gap-3 md:gap-0"
     >
       <div>
         <p className="mb-1.5 text-xl text-zinc-50 group-hover:text-amber-400 transition-colors">
@@ -223,7 +224,7 @@ const ProjectItem = ({ title, year, location, type }) => {
           <p className="text-sm uppercase text-zinc-500">{type}</p>
         </div>
       </div>
-      <div className="flex items-center gap-1.5 text-end text-sm uppercase text-zinc-500">
+      <div className="flex items-center gap-1.5 text-start md:text-end text-sm uppercase text-zinc-500">
         <p className="group-hover:text-zinc-300 transition-colors">{location}</p>
         <MapPin className="w-4 h-4 group-hover:text-amber-400 transition-colors" />
       </div>
