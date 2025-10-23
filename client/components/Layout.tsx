@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import TerminalPreLoader from "@/pages/TerminalPreLoader";
+import ScrollIndicator from "./ui/ScrollIndicator";
 
 
 const navItems = [
@@ -63,6 +64,7 @@ export function Layout() {
 
   return (
     <div className="min-h-screen flex flex-col">
+      <ScrollIndicator/>
       <a
         href="#content"
         className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded-md focus:bg-accent focus:px-3 focus:py-2 focus:text-accent-foreground"

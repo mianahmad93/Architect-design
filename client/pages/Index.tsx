@@ -9,9 +9,9 @@ import ExpertiseSection from "./Expertise";
 import Landmark from "./Landmark";
 import Hero from "./Hero";
 import IndexAbout from "./IndexAbout";
-import {Testimonials} from "./Testimonials";
+import { Testimonials } from "./Testimonials";
 import Featured from "./Featured";
-import IndexContact from "./IndexContact";
+import { IndexContact } from "./IndexContact";
 
 export default function Index() {
   const { scrollYProgress } = useScroll();
@@ -43,12 +43,12 @@ export default function Index() {
     >
       <Hero />
       <IndexAbout />
-       <Landmark />
+      <Landmark />
 
-      <Featured />
       <Testimonials />
+      <Featured />
       {/* <ExpertiseSection /> */}
-      {/* <IndexContact /> */}
+      <IndexContact />
     </motion.div>
   );
 }

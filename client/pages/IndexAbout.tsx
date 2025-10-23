@@ -1,9 +1,9 @@
-import { motion, useInView } from "framer-motion";
-import { useRef, useEffect } from "react";
+import { motion, useInView, Variants } from "framer-motion";
+import { useRef, useEffect, useState } from "react";
 
 // ✅ Static animated background grid (lines only)
 const AnimatedGrid = () => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const canvasRef = useRef(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -47,17 +47,81 @@ const AnimatedGrid = () => {
   );
 };
 
+// Shuffle function
+const shuffle = (array) => {
+  let currentIndex = array.length;
+  let randomIndex;
+  const arr = array.slice();
+  while (currentIndex !== 0) {
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+    [arr[currentIndex], arr[randomIndex]] = [arr[randomIndex], arr[currentIndex]];
+  }
+  return arr;
+};
+
+// ✅ Only 9 Architectural Images
+const squareData = [
+  { id: 1, src: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=800&q=80" },
+  { id: 2, src: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=800&q=80" },
+  { id: 3, src: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=800&q=80" },
+  { id: 4, src: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=800&q=80" },
+  { id: 5, src: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=800&q=80" },
+  { id: 6, src: "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=800&q=80" },
+  { id: 7, src: "https://images.unsplash.com/photo-1600607688969-a5bfcd646154?auto=format&fit=crop&w=800&q=80" },
+  { id: 8, src: "https://images.unsplash.com/photo-1600573472550-8090b5e0745e?auto=format&fit=crop&w=800&q=80" },
+  { id: 9, src: "https://images.unsplash.com/photo-1600566753151-384129cf4e3e?auto=format&fit=crop&w=800&q=80" },
+];
+
+const generateSquares = () => {
+  return shuffle(squareData).map((sq) => (
+    <motion.div
+      key={sq.id}
+      layout
+      transition={{ duration: 1.5, type: "spring" }}
+      className="w-full h-full rounded-lg overflow-hidden"
+      style={{
+        backgroundImage: `url(${sq.src})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    />
+  ));
+};
+
+const ShuffleGrid = () => {
+  const timeoutRef = useRef(null);
+  const [squares, setSquares] = useState(generateSquares());
+
+  useEffect(() => {
+    shuffleSquares();
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, []);
+
+  const shuffleSquares = () => {
+    setSquares(generateSquares());
+    timeoutRef.current = window.setTimeout(shuffleSquares, 3000);
+  };
+
+  return (
+    <div className="grid grid-cols-3 grid-rows-3 h-[450px] gap-1">
+      {squares.map((sq) => sq)}
+    </div>
+  );
+};
+
 const IndexAbout = () => {
-  const sectionRef = useRef<HTMLDivElement | null>(null);
+  const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { margin: "-20%" });
 
-  // ✅ Framer Motion variants for text + image
-  const textContainer: any = {
-    hidden: { opacity: 0, x: -80, rotateY: 15 },
+  // ✅ Framer Motion variants for text
+  const textContainer: Variants = {
+    hidden: { opacity: 0, x: -80 },
     visible: {
       opacity: 1,
       x: 0,
-      rotateY: 0,
       transition: {
         type: "spring",
         duration: 1.2,
@@ -67,22 +131,12 @@ const IndexAbout = () => {
     },
   };
 
-  const textChild: any = {
-    hidden: { opacity: 0, y: 40, rotateX: -10 },
+  const textChild: Variants = {
+    hidden: { opacity: 0, y: 40 },
     visible: {
       opacity: 1,
       y: 0,
-      rotateX: 0,
       transition: { type: "spring", stiffness: 100, damping: 12 },
-    },
-  };
-
-  const imageVariants: any = {
-    hidden: { opacity: 0, x: 100 },
-    visible: {
-      opacity: 1,
-      x: 0,
-      transition: { duration: 1, ease: "easeOut" },
     },
   };
 
@@ -107,38 +161,48 @@ const IndexAbout = () => {
             animate={isInView ? "visible" : "hidden"}
             className="text-white space-y-6"
           >
+            <motion.span
+              variants={textChild}
+              className="block mb-4 text-xs md:text-sm text-amber-400 font-medium"
+            >
+              Crafting Excellence Every Day
+            </motion.span>
+
             <motion.h2
               variants={textChild}
-              className="font-heading text-3xl md:text-5xl font-bold leading-tight"
+              className="font-heading text-3xl md:text-5xl font-bold leading-tight bg-gradient-to-br from-amber-100 to-amber-400 bg-clip-text text-transparent"
             >
               Designing Modern Structures that Define the Future
             </motion.h2>
 
             <motion.p
               variants={textChild}
-              className="text-gray-300 leading-relaxed"
+              className="text-gray-300 leading-relaxed text-base md:text-lg"
             >
               Our architects and designers shape environments that balance
               aesthetics, sustainability, and human experience. Every project we
               create tells a story — merging innovation with timeless
               craftsmanship.
             </motion.p>
+
+            <motion.button
+              variants={textChild}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="bg-gradient-to-r from-amber-600 to-yellow-700 text-white font-medium py-3 px-6 rounded-lg transition-all hover:from-amber-700 hover:to-yellow-800"
+            >
+              Explore Our Projects
+            </motion.button>
           </motion.div>
 
-          {/* ✅ Right Image Section */}
+          {/* ✅ Right Shuffle Grid Section */}
           <motion.div
-            variants={imageVariants}
-            initial="hidden"
-            animate={isInView ? "visible" : "hidden"}
+            initial={{ opacity: 0, x: 100 }}
+            animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 100 }}
+            transition={{ duration: 1, ease: "easeOut" }}
             className="relative"
           >
-            <div className="rounded-2xl overflow-hidden border border-yellow-400/20 shadow-2xl">
-              <img
-                src="https://images.unsplash.com/photo-1501594907352-04cda38ebc29?auto=format&fit=crop&w=900&q=80"
-                alt="Modern Architecture Exterior"
-                className="object-cover w-full h-[400px]"
-              />
-            </div>
+            <ShuffleGrid />
 
             {/* Glow Effect */}
             <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 w-[400px] h-[150px] bg-yellow-400/20 blur-[80px] rounded-full pointer-events-none" />
